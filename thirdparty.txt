@@ -1,0 +1,146 @@
+Column	Type	Rules
+id	bigint (PK)	auto
+name	varchar(255)	required
+price	decimal(8,2)	required, ≥ 0
+description	text	nullable
+created_at / updated_at	timestamp	auto
+GET /api/products
+Returns all products, paginated (15 per page).
+
+Request:
+
+bash
+curl http://127.0.0.1:8000/api/products
+curl "http://127.0.0.1:8000/api/products?page=2"
+Response — HTTP 200:
+
+json
+{
+  "current_page": 1,
+  "data": [
+    {
+      "id": 1,
+      "name": "Wireless Bluetooth Headphones",
+      "price": "49.99",
+      "description": "Over-ear headphones with noise cancellation...",
+      "created_at": "2026-04-03T00:00:00.000000Z",
+      "updated_at": "2026-04-03T00:00:00.000000Z"
+    }
+  ],
+  "per_page": 15,
+  "total": 20,
+  "last_page": 2,
+  "next_page_url": "http://127.0.0.1:8000/api/products?page=2",
+  "prev_page_url": null
+}
+Pagination keys:
+
+Key	Meaning
+current_page	Page you're on
+per_page	Items per page (15)
+total	Total records
+last_page	Total pages
+next_page_url	Next page URL (null if last page)
+prev_page_url	Prev page URL (null if first page)
+data[]	Products on this page
+POST /api/products
+Creates a new product.
+
+Request:
+
+bash
+curl -X POST http://127.0.0.1:8000/api/products \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"name":"Smart Watch","price":199.99,"description":"Fitness tracking smartwatch."}'
+Validation rules:
+
+Field	Rules
+name	required, string, max 255 chars
+price	required, numeric, min 0
+description	optional, string
+Response — HTTP 201:
+
+json
+{
+  "id": 21,
+  "name": "Smart Watch",
+  "price": "199.99",
+  "description": "Fitness tracking smartwatch.",
+  "created_at": "2026-04-03T00:00:00.000000Z",
+  "updated_at": "2026-04-03T00:00:00.000000Z"
+}
+Validation error — HTTP 422:
+
+json
+{
+  "message": "The name field is required. (and 1 more error)",
+  "errors": {
+    "name":  ["The name field is required."],
+    "price": ["The price field is required."]
+  }
+}
+DELETE /api/products/{id}
+Deletes a product by ID.
+
+Request:
+
+bash
+curl -X DELETE http://127.0.0.1:8000/api/products/1 \
+  -H "Accept: application/json"
+Response — HTTP 204: (empty body)
+
+Not found — HTTP 404:
+
+json
+{
+  "message": "No query results for model [App\\Models\\Product] 9999"
+}
+Seeding / Resetting Data
+bash
+# Seed products (first run)
+php artisan db:seed --class=ProductSeeder
+# Full reset + reseed
+php artisan migrate:fresh --seed
+Task 2 — External Posts API
+Fetches live data from JSONPlaceholder and returns the first 10 posts with title and body only.
+
+File
+File	Purpose
+app/Http/Controllers/Api/PostController.php	Fetches & filters posts
+GET /api/posts
+Returns the first 10 posts. Optionally filter by title with ?search=.
+
+Request:
+
+bash
+# All (first 10)
+curl http://127.0.0.1:8000/api/posts
+# Search by title keyword (case-insensitive)
+curl "http://127.0.0.1:8000/api/posts?search=qui"
+Response — HTTP 200:
+
+json
+[
+  {
+    "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+    "body":  "quia et suscipit\nsuscipit recusandae consequuntur..."
+  },
+  {
+    "title": "qui est esse",
+    "body":  "est rerum tempore vitae\nsequi sint nihil reprehenderit..."
+  }
+]
+Search — ?search=qui:
+Filters all 100 posts by title containing "qui" (case-insensitive), then returns the first 10 matches.
+
+No results:
+
+json
+[]
+All Routes Summary
+GET    /api/products          → list products (paginated)
+POST   /api/products          → create product
+DELETE /api/products/{id}     → delete product
+GET    /api/posts             → fetch first 10 external posts
+GET    /api/posts?search=xyz  → search posts by title

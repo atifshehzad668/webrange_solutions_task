@@ -1,0 +1,42 @@
+ask 2 — External Posts API
+Fetches live data from JSONPlaceholder and returns the first 10 posts with title and body only.
+
+File
+File	Purpose
+app/Http/Controllers/Api/PostController.php	Fetches & filters posts
+GET /api/posts
+Returns the first 10 posts. Optionally filter by title with ?search=.
+
+Request:
+
+bash
+# All (first 10)
+curl http://127.0.0.1:8000/api/posts
+# Search by title keyword (case-insensitive)
+curl "http://127.0.0.1:8000/api/posts?search=qui"
+Response — HTTP 200:
+
+json
+[
+  {
+    "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+    "body":  "quia et suscipit\nsuscipit recusandae consequuntur..."
+  },
+  {
+    "title": "qui est esse",
+    "body":  "est rerum tempore vitae\nsequi sint nihil reprehenderit..."
+  }
+]
+Search — ?search=qui:
+Filters all 100 posts by title containing "qui" (case-insensitive), then returns the first 10 matches.
+
+No results:
+
+json
+[]
+All Routes Summary
+GET    /api/products          → list products (paginated)
+POST   /api/products          → create product
+DELETE /api/products/{id}     → delete product
+GET    /api/posts             → fetch first 10 external posts
+GET    /api/posts?search=xyz  → search posts by title
