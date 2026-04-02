@@ -11,3 +11,5 @@ Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 Route::get('/posts', [PostController::class, 'index']);
 
 Route::get('/quotes', [\App\Http\Controllers\QuoteController::class, 'index']);
+
+Route::get('/http-request', [\App\Http\Controllers\HttpRequestController::class, 'index']);

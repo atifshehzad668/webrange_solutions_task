@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HttpRequestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuoteController;
 use Illuminate\Support\Facades\Route;
